@@ -118,6 +118,12 @@
         filter: brightness(1.02);
       }
 
+      .button-shine:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+        filter: saturate(0.85);
+      }
+
       @media (max-width: 640px) {
         .hero-photo::after {
           inset: 14px;
@@ -210,24 +216,20 @@
             <div class="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
               <div class="relative order-2 lg:order-1">
                 <div class="absolute inset-x-8 -top-5 h-px ornament-line"></div>
-                <p
-                  class="mb-4 text-xs font-semibold uppercase tracking-[0.34em] text-bronze sm:text-sm"
-                  data-i18n="heroKicker"
-                >
-                  С любовью приглашаем разделить этот теплый вечер
-                </p>
                 <h1
-                  class="font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl lg:text-6xl"
+                  class="whitespace-nowrap font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl lg:text-6xl"
                   data-i18n="heroTitle"
                 >
-                  Приглашаем на юбилей!
+                  Юбилей — 90 лет
                 </h1>
-                <p
-                  class="mt-4 max-w-xl text-sm leading-7 text-ink/75 sm:text-base"
-                  data-i18n="heroText"
+                <div
+                  class="mt-4 max-w-xl space-y-4 text-sm leading-7 text-ink/75 sm:text-base"
+                  data-i18n-html="heroText"
                 >
-                  Будем счастливы провести этот особенный день в кругу родных и друзей.
-                </p>
+                  <p>20 июня 2026 года нашей маме Баянтаевой Кадише исполняется 90 лет — прекрасный и редкий юбилей, наполненный мудростью, теплом и жизненным опытом.</p>
+                  <p>С большой радостью приглашаем Вас разделить с нами этот особенный день и стать частью тёплого семейного праздника, посвящённого её юбилею.</p>
+                  <p>Будем искренне рады видеть Вас среди гостей, чтобы вместе вспомнить добрые моменты, сказать важные слова и подарить имениннице внимание и заботу.</p>
+                </div>
 
                 <div class="mt-8 grid gap-3 sm:grid-cols-3">
                   <article class="rounded-3xl border border-bronze/15 bg-white/65 p-4">
@@ -370,6 +372,17 @@
               </p>
 
               <form id="rsvp-form" class="mt-6 space-y-4">
+                <div class="hidden" aria-hidden="true">
+                  <label for="website">Website</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabindex="-1"
+                    autocomplete="off"
+                  />
+                </div>
+
                 <div>
                   <label for="fullName" class="mb-2 block text-sm font-semibold text-ink" data-i18n="fullNameLabel">
                     ФИО
@@ -427,24 +440,18 @@
           </section>
         </main>
 
-        <footer class="px-2 pt-8 text-center">
-          <p class="text-xs uppercase tracking-[0.28em] text-bronze/80" data-i18n="footerText">
-            С нетерпением ждем встречи в этот особенный день
-          </p>
-        </footer>
       </div>
     </div>
 
     <script>
-      const scriptUrl = "https://script.google.com/macros/s/AKfycbxt-rG1AeXepkaLx3KwqRbBUGYV5zRqXGM2sp1nRriS2PrZNxrDDE2QsPhgRxjaIH8Q/exec";
+      const scriptUrl = "https://script.google.com/macros/s/AKfycbzhNWeAXilURFF9Ms1qcjf3oytLF0wbe1HaBcA4RHYwdDRW0sYDTJYFWg8LpqlyZeJU/exec";
       const eventDate = new Date("2026-06-21T18:00:00");
 
       const translations = {
         ru: {
           pageTitle: "Приглашение на юбилей",
-          heroKicker: "С любовью приглашаем разделить этот теплый вечер",
-          heroTitle: "Приглашаем на юбилей!",
-          heroText: "Будем счастливы провести этот особенный день в кругу родных и друзей.",
+          heroTitle: "Юбилей — 90 лет",
+          heroText: "<p>20 июня 2026 года нашей маме Баянтаевой Кадише исполняется 90 лет — прекрасный и редкий юбилей, наполненный мудростью, теплом и жизненным опытом.</p><p>С большой радостью приглашаем Вас разделить с нами этот особенный день и стать частью тёплого семейного праздника, посвящённого её юбилею.</p><p>Будем искренне рады видеть Вас среди гостей, чтобы вместе вспомнить добрые моменты, сказать важные слова и подарить имениннице внимание и заботу.</p>",
           dateLabel: "Дата",
           dateValue: "21 июня 2026",
           timeLabel: "Время",
@@ -468,7 +475,6 @@
           optionCouple: "Приду с супругом/супругой",
           optionDecline: "Не смогу прийти",
           submitButton: "Подтвердить",
-          footerText: "С нетерпением ждем встречи в этот особенный день",
           validationError: "Пожалуйста, заполните имя и выберите вариант ответа.",
           loadingMessage: "Отправляем подтверждение...",
           successMessage: "Спасибо! Ваш ответ успешно отправлен.",
@@ -477,9 +483,8 @@
         },
         kz: {
           pageTitle: "Мерейтойға шақыру",
-          heroKicker: "Осы ерекше кешті бірге өткізуге шын жүректен шақырамыз",
-          heroTitle: "Мерейтойға шақырамыз!",
-          heroText: "Бұл қымбат күнді туыстар мен достардың ортасында бірге атап өтсек, біз үшін үлкен қуаныш болар еді.",
+          heroTitle: "Мерейтой — 90 жас",
+          heroText: "<p>2026 жылғы 20 маусымда анамыз Баянтаева Кадишаның 90 жасқа толуына орай мерейлі де сирек кездесетін ерекше мерейтойы аталып өтеді. Бұл белес даналыққа, жылулыққа және өмірлік тәжірибеге толы.</p><p>Сізді осы айрықша күнді бізбен бірге бөлісуге және оның мерейтойына арналған жылы отбасылық мерекенің бір бөлшегі болуға зор қуанышпен шақырамыз.</p><p>Жақсы сәттерді бірге еске алып, жүрекке жақын тілектер айтып, мерейтой иесіне ықылас пен қамқорлық сыйлау үшін Сізді қонақтарымыздың арасынан көруге шын жүректен қуанышты боламыз.</p>",
           dateLabel: "Күні",
           dateValue: "21 маусым 2026",
           timeLabel: "Уақыты",
@@ -503,7 +508,6 @@
           optionCouple: "Жұбайыммен бірге келемін",
           optionDecline: "Келе алмаймын",
           submitButton: "Растау",
-          footerText: "Осы ерекше күні жүздесуді асыға күтеміз",
           validationError: "Аты-жөніңізді енгізіп, жауап нұсқасын таңдаңыз.",
           loadingMessage: "Жауап жіберіліп жатыр...",
           successMessage: "Рақмет! Жауабыңыз сәтті жіберілді.",
@@ -518,9 +522,14 @@
 
       const langButtons = document.querySelectorAll("[data-lang]");
       const translatableNodes = document.querySelectorAll("[data-i18n]");
+      const htmlTranslatableNodes = document.querySelectorAll("[data-i18n-html]");
       const placeholderNodes = document.querySelectorAll("[data-i18n-placeholder]");
       const form = document.getElementById("rsvp-form");
       const messageNode = document.getElementById("form-message");
+      const submitButton = form.querySelector('button[type="submit"]');
+      const submitLockDuration = 4000;
+      let submitLockTimer = null;
+      let isSubmitLocked = false;
 
       function setLanguage(lang) {
         state.lang = lang;
@@ -533,6 +542,13 @@
           const key = node.dataset.i18n;
           if (dictionary[key]) {
             node.textContent = dictionary[key];
+          }
+        });
+
+        htmlTranslatableNodes.forEach((node) => {
+          const key = node.dataset.i18nHtml;
+          if (dictionary[key]) {
+            node.innerHTML = dictionary[key];
           }
         });
 
@@ -550,6 +566,21 @@
 
       function formatNumber(value, minLength = 2) {
         return String(value).padStart(minLength, "0");
+      }
+
+      function lockSubmitButton() {
+        isSubmitLocked = true;
+        submitButton.disabled = true;
+
+        if (submitLockTimer) {
+          clearTimeout(submitLockTimer);
+        }
+
+        submitLockTimer = window.setTimeout(() => {
+          isSubmitLocked = false;
+          submitButton.disabled = false;
+          submitLockTimer = null;
+        }, submitLockDuration);
       }
 
       function updateCountdown() {
@@ -570,15 +601,29 @@
       async function submitForm(event) {
         event.preventDefault();
 
+        if (isSubmitLocked) {
+          return;
+        }
+
+        lockSubmitButton();
+
         const dictionary = translations[state.lang];
         const formData = new FormData(form);
         const fullName = (formData.get("fio") || "").toString().trim();
         const attendance = formData.get("attendance");
+        const honeypot = (formData.get("website") || "").toString().trim();
         const attendanceMap = {
           coming: dictionary.optionComing,
           coming_with_spouse: dictionary.optionCouple,
           not_coming: dictionary.optionDecline
         };
+
+        if (honeypot) {
+          form.reset();
+          messageNode.textContent = dictionary.successMessage;
+          messageNode.className = "min-h-[1.5rem] text-sm font-medium text-emerald-700";
+          return;
+        }
 
         if (!fullName || !attendance) {
           messageNode.textContent = dictionary.validationError;
@@ -595,6 +640,7 @@
         const payload = new URLSearchParams({
           fio: fullName,
           attendance: attendanceMap[attendance.toString()] || attendance.toString(),
+          website: honeypot,
           language: state.lang,
           submittedAt: new Date().toISOString()
         });
