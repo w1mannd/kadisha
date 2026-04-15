@@ -377,7 +377,7 @@
                   <div class="field-shell rounded-2xl border border-bronze/15 bg-white/75 transition-all duration-300">
                     <input
                       id="fullName"
-                      name="fullName"
+                      name="fio"
                       type="text"
                       required
                       class="w-full rounded-2xl bg-transparent px-4 py-3.5 text-sm text-ink outline-none placeholder:text-ink/35"
@@ -436,7 +436,7 @@
     </div>
 
     <script>
-      const scriptUrl = "https://script.google.com/macros/s/AKfycbzpGlalWVt4kYezOVRm2BxTohuzBvwySVtI4hmcsn9whCVjqT9WF458k-Stn7ecEsUq/exec";
+      const scriptUrl = "https://script.google.com/macros/s/AKfycbxt-rG1AeXepkaLx3KwqRbBUGYV5zRqXGM2sp1nRriS2PrZNxrDDE2QsPhgRxjaIH8Q/exec";
       const eventDate = new Date("2026-06-21T18:00:00");
 
       const translations = {
@@ -572,8 +572,13 @@
 
         const dictionary = translations[state.lang];
         const formData = new FormData(form);
-        const fullName = (formData.get("fullName") || "").toString().trim();
+        const fullName = (formData.get("fio") || "").toString().trim();
         const attendance = formData.get("attendance");
+        const attendanceMap = {
+          coming: dictionary.optionComing,
+          coming_with_spouse: dictionary.optionCouple,
+          not_coming: dictionary.optionDecline
+        };
 
         if (!fullName || !attendance) {
           messageNode.textContent = dictionary.validationError;
@@ -588,8 +593,8 @@
         }
 
         const payload = new URLSearchParams({
-          fullName,
-          attendance: attendance.toString(),
+          fio: fullName,
+          attendance: attendanceMap[attendance.toString()] || attendance.toString(),
           language: state.lang,
           submittedAt: new Date().toISOString()
         });
