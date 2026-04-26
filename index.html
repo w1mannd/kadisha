@@ -151,22 +151,39 @@
         aria-hidden="true"
       >
         <path
-          d="M37 118C63 118 83 99 83 75C83 51 102 33 126 33C147 33 165 49 171 69C176 85 173 102 160 116C149 127 136 133 120 133C153 133 180 156 180 187C180 198 176 208 169 216"
+          d="M120 42C103 42 90 55 90 71C90 84 98 93 109 100C86 104 70 121 70 142C70 164 87 182 111 182C126 182 139 174 146 162"
           stroke="currentColor"
           stroke-width="8"
           stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M68 145C89 145 106 128 106 106C106 93 112 81 123 73C137 62 154 62 167 71C181 81 189 98 189 116C189 140 173 159 151 165C138 169 125 167 114 161"
+          d="M120 42C137 42 150 55 150 71C150 84 142 93 131 100C154 104 170 121 170 142C170 164 153 182 129 182C114 182 101 174 94 162"
           stroke="currentColor"
           stroke-width="8"
           stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M76 186C99 186 118 168 118 146"
+          d="M108 101C108 114 98 124 84 124C97 124 108 134 108 148C108 161 98 171 84 171"
           stroke="currentColor"
           stroke-width="8"
           stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M132 101C132 114 142 124 156 124C143 124 132 134 132 148C132 161 142 171 156 171"
+          stroke="currentColor"
+          stroke-width="8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M104 71C104 80 111 87 120 87C129 87 136 80 136 71"
+          stroke="currentColor"
+          stroke-width="8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
       </svg>
 
@@ -177,22 +194,39 @@
         aria-hidden="true"
       >
         <path
-          d="M37 118C63 118 83 99 83 75C83 51 102 33 126 33C147 33 165 49 171 69C176 85 173 102 160 116C149 127 136 133 120 133C153 133 180 156 180 187C180 198 176 208 169 216"
+          d="M120 42C103 42 90 55 90 71C90 84 98 93 109 100C86 104 70 121 70 142C70 164 87 182 111 182C126 182 139 174 146 162"
           stroke="currentColor"
           stroke-width="8"
           stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M68 145C89 145 106 128 106 106C106 93 112 81 123 73C137 62 154 62 167 71C181 81 189 98 189 116C189 140 173 159 151 165C138 169 125 167 114 161"
+          d="M120 42C137 42 150 55 150 71C150 84 142 93 131 100C154 104 170 121 170 142C170 164 153 182 129 182C114 182 101 174 94 162"
           stroke="currentColor"
           stroke-width="8"
           stroke-linecap="round"
+          stroke-linejoin="round"
         />
         <path
-          d="M76 186C99 186 118 168 118 146"
+          d="M108 101C108 114 98 124 84 124C97 124 108 134 108 148C108 161 98 171 84 171"
           stroke="currentColor"
           stroke-width="8"
           stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M132 101C132 114 142 124 156 124C143 124 132 134 132 148C132 161 142 171 156 171"
+          stroke="currentColor"
+          stroke-width="8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M104 71C104 80 111 87 120 87C129 87 136 80 136 71"
+          stroke="currentColor"
+          stroke-width="8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
       </svg>
 
@@ -359,19 +393,21 @@
                 </div>
                 <svg width="58" height="58" viewBox="0 0 58 58" fill="none" aria-hidden="true">
                   <circle cx="29" cy="29" r="28" stroke="rgba(183,147,102,0.18)" />
+                  <circle cx="29" cy="29" r="17" stroke="#c8aa81" stroke-width="1.8" />
                   <path
-                    d="M16 29H24L29 18L34 29H42"
-                    stroke="#b79366"
+                    d="M29 19V29L36 33"
+                    stroke="#9f7e55"
                     stroke-width="2.6"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
                   <path
-                    d="M29 40V18"
-                    stroke="#d4b58d"
-                    stroke-width="2.6"
+                    d="M22 14C24 12.8 26.3 12 29 12C31.7 12 34 12.8 36 14"
+                    stroke="#dbc3a9"
+                    stroke-width="2.2"
                     stroke-linecap="round"
                   />
+                  <circle cx="29" cy="29" r="2.2" fill="#9f7e55" />
                 </svg>
               </div>
               <p class="mt-4 max-w-md text-sm leading-7 text-ink/70" data-i18n="countdownText">
@@ -625,7 +661,10 @@
       const guestNoteText = document.getElementById("guest-note-text");
       const map2gisLink = document.getElementById("map-2gis");
       const mapGoogleLink = document.getElementById("map-google");
-      const locationQuery = "Ақ Отау, Исатая Тайманова 16, Атырау";
+      const directMapLinks = {
+        twoGis: "https://2gis.kz/aktobe/firm/70000001032574136",
+        google: "https://maps.app.goo.gl/EpJGoPe4L8AgMiws8"
+      };
       const submitLockDuration = 4000;
       const guestName = new URLSearchParams(window.location.search).get("guest") || "";
       let submitLockTimer = null;
@@ -707,8 +746,8 @@
       }
 
       function updateMapLinks() {
-        map2gisLink.href = "https://2gis.kz/search/" + encodeURIComponent(locationQuery);
-        mapGoogleLink.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(locationQuery);
+        map2gisLink.href = directMapLinks.twoGis;
+        mapGoogleLink.href = directMapLinks.google;
       }
 
       function showSuccessPanel() {
