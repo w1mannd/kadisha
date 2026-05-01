@@ -771,28 +771,35 @@
         return temp.textContent || temp.innerText || "";
       }
 
-      function buildGoogleCalendarUrl() {
+      function toIcsDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        return `${year}${month}${day}T${hours}${minutes}${seconds}`;
+      }
+
+      function escapeIcsText(value) {
+        return String(value || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/\n/g, "\\n")
+          .replace(/,/g, "\\,")
+          .replace(/;/g, "\\;");
+      }
+
+      function getCalendarEventData() {
         const dictionary = translations[state.lang];
         const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
         const description = `${stripHtml(dictionary.heroText)}\n\nНапоминание: за 10 дней до события.`;
         const location = `${dictionary.locationValue}, ${dictionary.locationAddress}`;
-        const params = new URLSearchParams({
-          action: "TEMPLATE",
-          text: title,
-          details: description,
-          location,
-          dates: "20260621T113000/20260621T143000",
-          ctz: "Asia/Aqtobe"
-        });
 
-        return `https://calendar.google.com/calendar/render?${params.toString()}`;
+        return { title, description, location };
       }
 
       function buildAndroidCalendarIntent() {
-        const dictionary = translations[state.lang];
-        const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
-        const description = `${stripHtml(dictionary.heroText)}\n\nНапоминание: за 10 дней до события.`;
-        const location = `${dictionary.locationValue}, ${dictionary.locationAddress}`;
+        const eventData = getCalendarEventData();
         const beginTime = eventDate.getTime();
         const endTime = eventEndDate.getTime();
 
@@ -800,17 +807,42 @@
           "intent://calendar/event#Intent",
           "action=android.intent.action.INSERT",
           "type=vnd.android.cursor.item/event",
-          `S.title=${encodeURIComponent(title)}`,
-          `S.description=${encodeURIComponent(description)}`,
-          `S.eventLocation=${encodeURIComponent(location)}`,
+          `S.title=${encodeURIComponent(eventData.title)}`,
+          `S.description=${encodeURIComponent(eventData.description)}`,
+          `S.eventLocation=${encodeURIComponent(eventData.location)}`,
           `l.beginTime=${beginTime}`,
           `l.endTime=${endTime}`,
           "end"
         ].join(";");
       }
 
-      function downloadReminder() {
-        const calendarUrl = buildGoogleCalendarUrl();
+      function buildCalendarDataUrl() {
+        const eventData = getCalendarEventData();
+        const icsContent = [
+          "BEGIN:VCALENDAR",
+          "VERSION:2.0",
+          "PRODID:-//Kadisha Invitation//RU",
+          "BEGIN:VEVENT",
+          "UID:kadisha-90@invitation",
+          `DTSTAMP:${toIcsDate(new Date())}`,
+          `DTSTART:${toIcsDate(eventDate)}`,
+          `DTEND:${toIcsDate(eventEndDate)}`,
+          `SUMMARY:${escapeIcsText(eventData.title)}`,
+          `DESCRIPTION:${escapeIcsText(eventData.description)}`,
+          `LOCATION:${escapeIcsText(eventData.location)}`,
+          "BEGIN:VALARM",
+          "TRIGGER:-P10D",
+          "ACTION:DISPLAY",
+          `DESCRIPTION:${escapeIcsText(eventData.title)}`,
+          "END:VALARM",
+          "END:VEVENT",
+          "END:VCALENDAR"
+        ].join("\r\n");
+
+        return `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
+      }
+
+      function addReminderToCalendar() {
         const isAndroid = /Android/i.test(navigator.userAgent);
 
         if (isAndroid) {
@@ -818,7 +850,7 @@
           return;
         }
 
-        window.open(calendarUrl, "_blank", "noopener,noreferrer");
+        window.location.href = buildCalendarDataUrl();
       }
 
       function showSuccessPanel() {
@@ -939,7 +971,7 @@
         button.addEventListener("click", () => setLanguage(button.dataset.lang));
       });
 
-      reminderButton.addEventListener("click", downloadReminder);
+      reminderButton.addEventListener("click", addReminderToCalendar);
       editResponseButton.addEventListener("click", showFormPanel);
       form.addEventListener("submit", submitForm);
 
