@@ -335,6 +335,17 @@
                   </article>
                 </div>
 
+                <div class="mt-4">
+                  <button
+                    id="reminder-button"
+                    type="button"
+                    class="map-link inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold text-ink transition duration-300 hover:border-bronze/35 hover:text-bronze sm:w-auto"
+                    data-i18n="addReminder"
+                  >
+                    Добавить напоминание
+                  </button>
+                </div>
+
                 <div
                   id="guest-note"
                   class="mt-6 hidden max-w-xl rounded-3xl border border-bronze/15 bg-white/70 px-4 py-4 text-sm leading-7 text-ink/80 shadow-sm"
@@ -572,6 +583,7 @@
           locationAddress: "Ул. Исатая Тайманова, 16",
           open2gis: "Открыть в 2GIS",
           openGoogleMaps: "Открыть в Google Maps",
+          addReminder: "Добавить напоминание",
           guestLabel: "Именное приглашение",
           guestNote: "{name}, будем очень рады видеть Вас среди наших дорогих гостей в этот особенный день.",
           countdownEyebrow: "До встречи осталось",
@@ -613,6 +625,7 @@
           locationAddress: "Исатай Тайманұлы к-сі, 16",
           open2gis: "2GIS-та ашу",
           openGoogleMaps: "Google Maps-та ашу",
+          addReminder: "Еске салғыш қосу",
           guestLabel: "Арнайы шақыру",
           guestNote: "{name}, осы ерекше күні Сізді қадірлі қонақтарымыздың қатарынан көруге шын жүректен қуанышты боламыз.",
           countdownEyebrow: "Кездесуге дейін қалды",
@@ -661,10 +674,12 @@
       const guestNoteText = document.getElementById("guest-note-text");
       const map2gisLink = document.getElementById("map-2gis");
       const mapGoogleLink = document.getElementById("map-google");
+      const reminderButton = document.getElementById("reminder-button");
       const directMapLinks = {
         twoGis: "https://2gis.kz/aktobe/firm/70000001032574136",
         google: "https://maps.app.goo.gl/EpJGoPe4L8AgMiws8"
       };
+      const eventEndDate = new Date("2026-06-21T14:30:00");
       const submitLockDuration = 4000;
       const guestName = new URLSearchParams(window.location.search).get("guest") || "";
       let submitLockTimer = null;
@@ -748,6 +763,67 @@
       function updateMapLinks() {
         map2gisLink.href = directMapLinks.twoGis;
         mapGoogleLink.href = directMapLinks.google;
+      }
+
+      function toIcsDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        return `${year}${month}${day}T${hours}${minutes}${seconds}`;
+      }
+
+      function escapeIcsText(value) {
+        return String(value || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/\n/g, "\\n")
+          .replace(/,/g, "\\,")
+          .replace(/;/g, "\\;");
+      }
+
+      function stripHtml(html) {
+        const temp = document.createElement("div");
+        temp.innerHTML = html;
+        return temp.textContent || temp.innerText || "";
+      }
+
+      function downloadReminder() {
+        const dictionary = translations[state.lang];
+        const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
+        const description = stripHtml(dictionary.heroText);
+        const location = `${dictionary.locationValue}, ${dictionary.locationAddress}`;
+        const icsContent = [
+          "BEGIN:VCALENDAR",
+          "VERSION:2.0",
+          "PRODID:-//Kadisha Invitation//RU",
+          "BEGIN:VEVENT",
+          `UID:${Date.now()}@kadisha-invitation`,
+          `DTSTAMP:${toIcsDate(new Date())}`,
+          `DTSTART:${toIcsDate(eventDate)}`,
+          `DTEND:${toIcsDate(eventEndDate)}`,
+          `SUMMARY:${escapeIcsText(title)}`,
+          `DESCRIPTION:${escapeIcsText(description)}`,
+          `LOCATION:${escapeIcsText(location)}`,
+          "BEGIN:VALARM",
+          "TRIGGER:-P1D",
+          "ACTION:DISPLAY",
+          `DESCRIPTION:${escapeIcsText(title)}`,
+          "END:VALARM",
+          "END:VEVENT",
+          "END:VCALENDAR"
+        ].join("\r\n");
+
+        const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = state.lang === "ru" ? "yubiley-napominanie.ics" : "mereitoi-eskesalgysh.ics";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
       function showSuccessPanel() {
@@ -868,6 +944,7 @@
         button.addEventListener("click", () => setLanguage(button.dataset.lang));
       });
 
+      reminderButton.addEventListener("click", downloadReminder);
       editResponseButton.addEventListener("click", showFormPanel);
       form.addEventListener("submit", submitForm);
 
