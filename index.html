@@ -789,7 +789,7 @@
         return temp.textContent || temp.innerText || "";
       }
 
-      function downloadReminder() {
+      function createReminderFile() {
         const dictionary = translations[state.lang];
         const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
         const description = stripHtml(dictionary.heroText);
@@ -807,7 +807,7 @@
           `DESCRIPTION:${escapeIcsText(description)}`,
           `LOCATION:${escapeIcsText(location)}`,
           "BEGIN:VALARM",
-          "TRIGGER:-P1D",
+          "TRIGGER:-P10D",
           "ACTION:DISPLAY",
           `DESCRIPTION:${escapeIcsText(title)}`,
           "END:VALARM",
@@ -815,15 +815,55 @@
           "END:VCALENDAR"
         ].join("\r\n");
 
+        const fileName = state.lang === "ru" ? "yubiley-napominanie.ics" : "mereitoi-eskesalgysh.ics";
         const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
+        return new File([blob], fileName, { type: "text/calendar;charset=utf-8" });
+      }
+
+      function downloadReminderFile(file) {
+        const url = URL.createObjectURL(file);
         const link = document.createElement("a");
         link.href = url;
-        link.download = state.lang === "ru" ? "yubiley-napominanie.ics" : "mereitoi-eskesalgysh.ics";
+        link.download = file.name;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      async function downloadReminder() {
+        const file = createReminderFile();
+
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: file.name,
+              files: [file]
+            });
+            return;
+          } catch (error) {
+            if (error && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: state.lang === "ru" ? "Добавить напоминание" : "Еске салғыш қосу",
+              text: state.lang === "ru"
+                ? "Откройте файл события и добавьте его в календарь."
+                : "Оқиға файлын ашып, күнтізбеге қосыңыз."
+            });
+          } catch (error) {
+            if (error && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+
+        downloadReminderFile(file);
       }
 
       function showSuccessPanel() {
