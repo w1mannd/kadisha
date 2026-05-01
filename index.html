@@ -295,7 +295,7 @@
                     >
                       Время
                     </p>
-                    <p class="mt-2 text-sm font-medium text-ink" data-i18n="timeValue">11:30</p>
+                    <p class="mt-2 text-sm font-medium text-ink" data-i18n="timeValue">12:00-17:00</p>
                   </article>
                   <article class="rounded-3xl border border-bronze/15 bg-white/65 p-4">
                     <p
@@ -567,7 +567,7 @@
 
     <script>
       const scriptUrl = "https://script.google.com/macros/s/AKfycbwBDPi-pnxQ74lLWb1x0Hhg2_-nz1furgO6xmB2gePa4yc30coFosWotDGEQ5MiRnVL/exec";
-      const eventDate = new Date("2026-06-21T11:30:00");
+      const eventDate = new Date("2026-06-21T12:00:00");
 
       const translations = {
         ru: {
@@ -577,7 +577,7 @@
           dateLabel: "Дата",
           dateValue: "21 июня 2026",
           timeLabel: "Время",
-          timeValue: "11:30",
+          timeValue: "12:00-17:00",
           locationLabel: "Место",
           locationValue: "Ресторан «Ақ Отау»",
           locationAddress: "Ул. Исатая Тайманова, 16",
@@ -619,7 +619,7 @@
           dateLabel: "Күні",
           dateValue: "21 маусым 2026",
           timeLabel: "Уақыты",
-          timeValue: "11:30",
+          timeValue: "12:00-17:00",
           locationLabel: "Өтетін орны",
           locationValue: "«Ақ Отау» рестораны",
           locationAddress: "Исатай Тайманұлы к-сі, 16",
@@ -679,7 +679,7 @@
         twoGis: "https://2gis.kz/aktobe/firm/70000001032574136",
         google: "https://maps.app.goo.gl/EpJGoPe4L8AgMiws8"
       };
-      const eventEndDate = new Date("2026-06-21T14:30:00");
+      const eventEndDate = new Date("2026-06-21T17:00:00");
       const submitLockDuration = 4000;
       const guestName = new URLSearchParams(window.location.search).get("guest") || "";
       let submitLockTimer = null;
@@ -792,7 +792,9 @@
       function getCalendarEventData() {
         const dictionary = translations[state.lang];
         const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
-        const description = `${stripHtml(dictionary.heroText)}\n\nНапоминание: за 10 дней до события.`;
+        const description = state.lang === "ru"
+          ? `21 июня 2026, 12:00-17:00. ${dictionary.locationValue}, ${dictionary.locationAddress}.`
+          : `2026 жылғы 21 маусым, 12:00-17:00. ${dictionary.locationValue}, ${dictionary.locationAddress}.`;
         const location = `${dictionary.locationValue}, ${dictionary.locationAddress}`;
 
         return { title, description, location };
@@ -842,8 +844,24 @@
         return `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
       }
 
-      function addReminderToCalendar() {
+      async function addReminderToCalendar() {
+        const eventData = getCalendarEventData();
+        const shareText = `${eventData.title}\n${eventData.description}`;
         const isAndroid = /Android/i.test(navigator.userAgent);
+
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: eventData.title,
+              text: shareText
+            });
+            return;
+          } catch (error) {
+            if (error && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
 
         if (isAndroid) {
           window.location.href = buildAndroidCalendarIntent();
