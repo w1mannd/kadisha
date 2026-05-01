@@ -774,7 +774,7 @@
       function buildGoogleCalendarUrl() {
         const dictionary = translations[state.lang];
         const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
-        const description = stripHtml(dictionary.heroText);
+        const description = `${stripHtml(dictionary.heroText)}\n\nНапоминание: за 10 дней до события.`;
         const location = `${dictionary.locationValue}, ${dictionary.locationAddress}`;
         const params = new URLSearchParams({
           action: "TEMPLATE",
@@ -788,26 +788,34 @@
         return `https://calendar.google.com/calendar/render?${params.toString()}`;
       }
 
-      async function downloadReminder() {
+      function buildAndroidCalendarIntent() {
         const dictionary = translations[state.lang];
-        const calendarUrl = buildGoogleCalendarUrl();
-        const shareText = state.lang === "ru"
-          ? "Откройте событие и добавьте напоминание в календарь."
-          : "Оқиғаны ашып, күнтізбеге еске салғыш ретінде қосыңыз.";
+        const title = state.lang === "ru" ? "Юбилей Баянтаевой Кадиши — 90 лет" : "Баянтаева Кадишаның 90 жас мерейтойы";
+        const description = `${stripHtml(dictionary.heroText)}\n\nНапоминание: за 10 дней до события.`;
+        const location = `${dictionary.locationValue}, ${dictionary.locationAddress}`;
+        const beginTime = eventDate.getTime();
+        const endTime = eventEndDate.getTime();
 
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: dictionary.addReminder,
-              text: shareText,
-              url: calendarUrl
-            });
-            return;
-          } catch (error) {
-            if (error && error.name === "AbortError") {
-              return;
-            }
-          }
+        return [
+          "intent://calendar/event#Intent",
+          "action=android.intent.action.INSERT",
+          "type=vnd.android.cursor.item/event",
+          `S.title=${encodeURIComponent(title)}`,
+          `S.description=${encodeURIComponent(description)}`,
+          `S.eventLocation=${encodeURIComponent(location)}`,
+          `l.beginTime=${beginTime}`,
+          `l.endTime=${endTime}`,
+          "end"
+        ].join(";");
+      }
+
+      function downloadReminder() {
+        const calendarUrl = buildGoogleCalendarUrl();
+        const isAndroid = /Android/i.test(navigator.userAgent);
+
+        if (isAndroid) {
+          window.location.href = buildAndroidCalendarIntent();
+          return;
         }
 
         window.open(calendarUrl, "_blank", "noopener,noreferrer");
